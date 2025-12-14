@@ -824,7 +824,8 @@ function closeModal(modalId) {
   // Clear inputs
   if (modalId === 'taskModal') {
     document.getElementById('taskName').value = '';
-    document.getElementById('taskHours').value = '1';
+    document.getElementById('taskHours').value = '0';
+    document.getElementById('taskMinutes').value = '30';
     document.getElementById('taskRequiresOnline').checked = false;
   } else {
     document.getElementById('thingName').value = '';
@@ -835,28 +836,33 @@ function closeModal(modalId) {
 
 function saveTask() {
   const name = document.getElementById('taskName').value.trim();
-  const hours = parseFloat(document.getElementById('taskHours').value) || 0;
+  const hours = parseInt(document.getElementById('taskHours').value) || 0;
+  const minutes = parseInt(document.getElementById('taskMinutes').value) || 0;
   const requiresOnline = document.getElementById('taskRequiresOnline').checked;
-  
+
   if (!name) {
     alert('اكتب اسم المهمة');
     return;
   }
-  
-  if (hours <= 0) {
-    alert('المدة لازم تكون أكبر من صفر');
+
+  if (hours === 0 && minutes === 0) {
+    alert('لازم تدخل مدة أكبر من صفر');
     return;
   }
-  
+
+  const durationMs =
+    (hours * 60 * 60 * 1000) +
+    (minutes * 60 * 1000);
+
   state.tasks.push({
     id: uid(),
     name: name,
-    durationMs: hours * 60 * 60 * 1000,
+    durationMs: durationMs,
     requiresOnline: requiresOnline,
     completedAt: null,
     remainingMs: 0
   });
-  
+
   saveState();
   renderTasks();
   closeModal('taskModal');
@@ -964,4 +970,5 @@ function init() {
 init();
 </script>
 </body>
+
 </html>
