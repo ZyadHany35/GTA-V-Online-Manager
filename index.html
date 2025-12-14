@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA Online Helper</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #141824;
+    --accent: #00d9ff;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --orange: #ff8c00;
+    --muted: #8895a7;
+    --border: rgba(255,255,255,0.05);
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
+    color: #e8eef5;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .logo-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--accent), var(--orange));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .logo h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .header-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .status-toggle {
+    padding: 12px 30px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  
+  .status-online {
+    background: var(--green);
+    color: white;
+  }
+  
+  .status-offline {
+    background: var(--red);
+    color: white;
+  }
+  
+  .money-box {
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 15px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .money-label {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  
+  .money-box input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    width: 150px;
+    text-align: center;
+    outline: none;
+  }
+  
+  /* Main Layout */
+  main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 25px;
+  }
+  
+  .panel {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 25px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  
+  .panel h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .panel-tasks h2 { color: var(--orange); }
+  .panel-things h2 { color: var(--accent); }
+  
+  .add-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--orange));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+  }
+  
+  .add-btn:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Items List */
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-left: 5px;
+  }
+  
+  .list::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .list::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+  }
+  
+  .item {
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    padding: 15px;
+    border-right: 4px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.2s;
+  }
+  
+  .item:hover {
+    background: rgba(255,255,255,0.04);
+    transform: translateX(-3px);
+  }
+  
+  .item-available { border-right-color: var(--green); }
+  .item-unavailable { border-right-color: var(--red); opacity: 0.75; }
+  .item-purchased { border-right-color: var(--muted); opacity: 0.5; }
+  
+  .item-content {
+    flex: 1;
+  }
+  
+  .item-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .item-meta {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .checkbox {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 16px;
+  }
+  
+  .checkbox-available {
+    border-color: var(--green);
+    color: var(--green);
+  }
+  
+  .checkbox-available:hover {
+    background: var(--green);
+    color: white;
+  }
+  
+  .checkbox-unavailable {
+    border-color: var(--red);
+    color: var(--red);
+    cursor: not-allowed;
+  }
+  
+  .checkbox-checked {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  
+  .delete-btn {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  
+  .delete-btn:hover {
+    background: var(--red);
+    color: white;
+  }
+  
+  .badge {
+    background: rgba(255,255,255,0.1);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  
+  .badge-priority {
+    background: var(--orange);
+    color: white;
+  }
+  
+  .status-text {
+    font-weight: 700;
+  }
+  
+  .status-ready { color: var(--green); }
+  .status-cooldown { color: var(--red); }
+  .status-paused { color: var(--orange); }
+  
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+  }
+  
+  .modal-content {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  
+  .modal-header {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: var(--accent);
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: white;
+    font-size: 15px;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .checkbox-group input {
+    width: auto;
+  }
+  
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 25px;
+  }
+  
+  .btn {
+    padding: 12px 25px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-cancel {
+    background: rgba(255,255,255,0.05);
+    color: white;
+  }
+  
+  .btn-save {
+    background: linear-gradient(135deg, var(--accent), var(--orange));
+    color: white;
+  }
+  
+  footer {
+    margin-top: 30px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  
+  @media (max-width: 768px) {
+    main {
+      grid-template-columns: 1fr;
+    }
+    
+    header {
+      justify-content: center;
+    }
+    
+    .header-controls {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .status-toggle,
+    .money-box {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🎮</div>
+      <h1>GTA Online Helper</h1>
+    </div>
+    
+    <div class="header-controls">
+      <button id="statusBtn" class="status-toggle status-online">Online</button>
+      
+      <div class="money-box">
+        <span class="money-label">فلوسي:</span>
+        <input type="number" id="moneyInput" value="500000" min="0" step="1000">
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel panel-tasks">
+      <h2>⚙️ Available Business Tasks</h2>
+      <button class="add-btn" id="addTaskBtn">+ إضافة مهمة جديدة</button>
+      <div class="list" id="tasksList"></div>
+    </section>
+    
+    <section class="panel panel-things">
+      <h2>🛒 Things I Want to Buy</h2>
+      <button class="add-btn" id="addThingBtn">+ إضافة شيء للشراء</button>
+      <div class="list" id="thingsList"></div>
+    </section>
+  </main>
+
+  <footer>
+    يتم الحفظ تلقائياً في المتصفح • البيانات محفوظة حتى لو أغلقت الموقع
+  </footer>
+</div>
+
+<!-- Task Modal -->
+<div id="taskModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">إضافة مهمة جديدة</div>
+    
+    <div class="form-group">
+      <label>اسم المهمة</label>
+      <input type="text" id="taskName" placeholder="مثال: Supply the Bunker">
+    </div>
+    
+    <div class="form-group">
+      <label>مدة الانتظار</label>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <input type="number" id="taskHours" value="0" min="0" placeholder="ساعات">
+          <small style="display: block; color: var(--muted); margin-top: 4px;">ساعات</small>
+        </div>
+        <div>
+          <input type="number" id="taskMinutes" value="30" min="0" max="59" placeholder="دقائق">
+          <small style="display: block; color: var(--muted); margin-top: 4px;">دقائق</small>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <div class="checkbox-group">
+        <input type="checkbox" id="taskRequiresOnline">
+        <label>تحتاج تكون Online عشان تعد؟</label>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('taskModal')">إلغاء</button>
+      <button class="btn btn-save" onclick="saveTask()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Thing Modal -->
+<div id="thingModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">إضافة شيء للشراء</div>
+    
+    <div class="form-group">
+      <label>اسم الشيء</label>
+      <input type="text" id="thingName" placeholder="مثال: Oppressor MK2">
+    </div>
+    
+    <div class="form-group">
+      <label>السعر</label>
+      <input type="number" id="thingPrice" value="100000" min="0" step="1000">
+    </div>
+    
+    <div class="form-group">
+      <label>الأولوية (اختياري - رقم أقل = أولوية أعلى)</label>
+      <input type="number" id="thingPriority" placeholder="مثال: 1" min="1">
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('thingModal')">إلغاء</button>
+      <button class="btn btn-save" onclick="saveThing()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== State Management =====
+const STORAGE_KEY = 'gta_helper_enhanced_v1';
+
+let state = {
+  isOnline: true,
+  money: 500000,
+  lastUpdate: Date.now(),
+  tasks: [], // { id, name, durationMs, requiresOnline, completedAt, remainingMs }
+  things: [] // { id, name, price, priority, purchased }
+};
+
+// ===== Utilities =====
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+function formatTime(ms) {
+  if (ms <= 0) return '0s';
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+// ===== Storage =====
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    const loaded = JSON.parse(saved);
+    const now = Date.now();
+    const elapsed = now - (loaded.lastUpdate || now);
+    
+    // Restore basic state
+    state.money = loaded.money || 500000;
+    state.isOnline = loaded.isOnline !== undefined ? loaded.isOnline : true;
+    state.things = loaded.things || [];
+    state.tasks = loaded.tasks || [];
+    
+    // Update task times based on elapsed time
+    state.tasks.forEach(task => {
+      if (task.completedAt && task.remainingMs > 0) {
+        // Only subtract time if task doesn't require online OR we were online
+        if (!task.requiresOnline || loaded.isOnline) {
+          task.remainingMs = Math.max(0, task.remainingMs - elapsed);
+        }
+        
+        // Reset task if time is up
+        if (task.remainingMs <= 0) {
+          task.completedAt = null;
+          task.remainingMs = 0;
+        }
+      }
+    });
+    
+    state.lastUpdate = now;
+  }
+}
+
+// ===== Task Logic =====
+function isTaskAvailable(task) {
+  // Not available if on cooldown
+  if (task.completedAt && task.remainingMs > 0) return false;
+  
+  // Not available if requires online and we're offline
+  if (task.requiresOnline && !state.isOnline) return false;
+  
+  return true;
+}
+
+function completeTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task || !isTaskAvailable(task)) return;
+  
+  task.completedAt = Date.now();
+  task.remainingMs = task.durationMs;
+  
+  saveState();
+  renderTasks();
+}
+
+function deleteTask(id) {
+  if (!confirm('متأكد تبي تحذف المهمة؟')) return;
+  
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  saveState();
+  renderTasks();
+}
+
+function renderTasks() {
+  const list = document.getElementById('tasksList');
+  
+  if (state.tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state">ما في مهام. اضغط الزر فوق عشان تضيف مهمة جديدة</div>';
+    return;
+  }
+  
+  // Sort: available first, then by remaining time
+  const sorted = [...state.tasks].sort((a, b) => {
+    const aAvail = isTaskAvailable(a);
+    const bAvail = isTaskAvailable(b);
+    
+    if (aAvail !== bAvail) return aAvail ? -1 : 1;
+    
+    // Sort unavailable by remaining time
+    if (!aAvail && !bAvail) {
+      return (a.remainingMs || 0) - (b.remainingMs || 0);
+    }
+    
+    return 0;
+  });
+  
+  list.innerHTML = sorted.map(task => {
+    const available = isTaskAvailable(task);
+    const onCooldown = task.completedAt && task.remainingMs > 0;
+    const paused = onCooldown && task.requiresOnline && !state.isOnline;
+    
+    let statusText = '';
+    let statusClass = '';
+    
+    if (available) {
+      statusText = '✓ جاهزة للتنفيذ';
+      statusClass = 'status-ready';
+    } else if (paused) {
+      statusText = `⏸ متوقفة: ${formatTime(task.remainingMs)}`;
+      statusClass = 'status-paused';
+    } else if (onCooldown) {
+      statusText = `⏳ باقي: ${formatTime(task.remainingMs)}`;
+      statusClass = 'status-cooldown';
+    }
+    
+    return `
+      <div class="item ${available ? 'item-available' : 'item-unavailable'}">
+        <div class="item-content">
+          <div class="item-title">${task.name}</div>
+          <div class="item-meta">
+            <span class="status-text ${statusClass}">${statusText}</span>
+            <span class="badge">مدة: ${formatTime(task.durationMs)}</span>
+            ${task.requiresOnline ? '<span class="badge">يحتاج Online</span>' : ''}
+          </div>
+        </div>
+        <div class="item-actions">
+          <div class="checkbox ${available ? 'checkbox-available' : 'checkbox-unavailable'}" 
+               onclick="${available ? `completeTask('${task.id}')` : ''}">
+            ${onCooldown ? '⏳' : available ? '✓' : '✗'}
+          </div>
+          <button class="delete-btn" onclick="deleteTask('${task.id}')">حذف</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== Thing Logic =====
+function canBuyThing(thing) {
+  return !thing.purchased && state.money >= thing.price;
+}
+
+function buyThing(id) {
+  const thing = state.things.find(t => t.id === id);
+  if (!thing || !canBuyThing(thing)) return;
+  
+  if (!confirm(`متأكد تبي تشتري ${thing.name} بسعر $${thing.price.toLocaleString()}؟`)) return;
+  
+  state.money -= thing.price;
+  thing.purchased = true;
+  
+  document.getElementById('moneyInput').value = state.money;
+  
+  saveState();
+  renderThings();
+}
+
+function deleteThing(id) {
+  if (!confirm('متأكد تبي تحذف؟')) return;
+  
+  state.things = state.things.filter(t => t.id !== id);
+  saveState();
+  renderThings();
+}
+
+function renderThings() {
+  const list = document.getElementById('thingsList');
+  
+  if (state.things.length === 0) {
+    list.innerHTML = '<div class="empty-state">ما في أشياء للشراء. اضغط الزر فوق عشان تضيف</div>';
+    return;
+  }
+  
+  // Sort: priority first (lower number = higher priority), then by price
+  const sorted = [...state.things].sort((a, b) => {
+    // Purchased items go to bottom
+    if (a.purchased !== b.purchased) return a.purchased ? 1 : -1;
+    
+    // Sort by priority
+    const aPrio = a.priority || 999;
+    const bPrio = b.priority || 999;
+    
+    if (aPrio !== bPrio) return aPrio - bPrio;
+    
+    // Then by price
+    return a.price - b.price;
+  });
+  
+  list.innerHTML = sorted.map(thing => {
+    const affordable = canBuyThing(thing);
+    const needed = thing.price - state.money;
+    
+    let itemClass = 'item-unavailable';
+    if (thing.purchased) itemClass = 'item-purchased';
+    else if (affordable) itemClass = 'item-available';
+    
+    return `
+      <div class="item ${itemClass}">
+        <div class="item-content">
+          <div class="item-title">
+            ${thing.priority ? `<span class="badge badge-priority">#${thing.priority}</span>` : ''}
+            ${thing.name}
+          </div>
+          <div class="item-meta">
+            <span>السعر: <strong>$${thing.price.toLocaleString()}</strong></span>
+            ${thing.purchased ? 
+              '<span class="status-text" style="color: var(--muted)">✓ تم الشراء</span>' :
+              affordable ?
+                `<span class="status-text status-ready">باقي بعد الشراء: $${(state.money - thing.price).toLocaleString()}</span>` :
+                `<span class="status-text status-cooldown">تحتاج: $${needed.toLocaleString()} زيادة</span>`
+            }
+          </div>
+        </div>
+        <div class="item-actions">
+          ${!thing.purchased ? `
+            <div class="checkbox ${affordable ? 'checkbox-available' : 'checkbox-unavailable'}" 
+                 onclick="${affordable ? `buyThing('${thing.id}')` : ''}">
+              ${affordable ? '💰' : '🔒'}
+            </div>
+          ` : ''}
+          <button class="delete-btn" onclick="deleteThing('${thing.id}')">حذف</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== UI Controls =====
+function updateStatusUI() {
+  const btn = document.getElementById('statusBtn');
+  btn.className = `status-toggle ${state.isOnline ? 'status-online' : 'status-offline'}`;
+  btn.textContent = state.isOnline ? 'Online' : 'Offline';
+}
+
+function toggleStatus() {
+  state.isOnline = !state.isOnline;
+  state.lastUpdate = Date.now();
+  
+  updateStatusUI();
+  saveState();
+  renderTasks(); // Re-render to show pause status
+}
+
+function updateMoney() {
+  const input = document.getElementById('moneyInput');
+  state.money = Math.max(0, parseInt(input.value) || 0);
+  input.value = state.money;
+  
+  saveState();
+  renderThings();
+}
+
+// ===== Modal Controls =====
+function openModal(modalId) {
+  document.getElementById(modalId).style.display = 'flex';
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).style.display = 'none';
+  
+  // Clear inputs
+  if (modalId === 'taskModal') {
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskHours').value = '1';
+    document.getElementById('taskRequiresOnline').checked = false;
+  } else {
+    document.getElementById('thingName').value = '';
+    document.getElementById('thingPrice').value = '100000';
+    document.getElementById('thingPriority').value = '';
+  }
+}
+
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const hours = parseFloat(document.getElementById('taskHours').value) || 0;
+  const requiresOnline = document.getElementById('taskRequiresOnline').checked;
+  
+  if (!name) {
+    alert('اكتب اسم المهمة');
+    return;
+  }
+  
+  if (hours <= 0) {
+    alert('المدة لازم تكون أكبر من صفر');
+    return;
+  }
+  
+  state.tasks.push({
+    id: uid(),
+    name: name,
+    durationMs: hours * 60 * 60 * 1000,
+    requiresOnline: requiresOnline,
+    completedAt: null,
+    remainingMs: 0
+  });
+  
+  saveState();
+  renderTasks();
+  closeModal('taskModal');
+}
+
+function saveThing() {
+  const name = document.getElementById('thingName').value.trim();
+  const price = parseInt(document.getElementById('thingPrice').value) || 0;
+  const priorityVal = document.getElementById('thingPriority').value.trim();
+  const priority = priorityVal ? parseInt(priorityVal) : null;
+  
+  if (!name) {
+    alert('اكتب اسم الشيء');
+    return;
+  }
+  
+  if (price <= 0) {
+    alert('السعر لازم يكون أكبر من صفر');
+    return;
+  }
+  
+  state.things.push({
+    id: uid(),
+    name: name,
+    price: price,
+    priority: priority,
+    purchased: false
+  });
+  
+  saveState();
+  renderThings();
+  closeModal('thingModal');
+}
+
+// ===== Timer Update =====
+function updateTimers() {
+  const now = Date.now();
+  const elapsed = now - state.lastUpdate;
+  
+  let changed = false;
+  
+  state.tasks.forEach(task => {
+    if (task.completedAt && task.remainingMs > 0) {
+      // Only subtract time if task doesn't require online OR we are online
+      if (!task.requiresOnline || state.isOnline) {
+        task.remainingMs = Math.max(0, task.remainingMs - elapsed);
+        changed = true;
+        
+        // Reset task if completed
+        if (task.remainingMs <= 0) {
+          task.completedAt = null;
+        }
+      }
+    }
+  });
+  
+  state.lastUpdate = now;
+  
+  if (changed) {
+    // Only save every 5 seconds to reduce localStorage writes
+    if (Math.floor(now / 5000) !== Math.floor((now - elapsed) / 5000)) {
+      saveState();
+    }
+    renderTasks();
+  }
+}
+
+// ===== Initialization =====
+function init() {
+  loadState();
+  updateStatusUI();
+  renderTasks();
+  renderThings();
+  
+  document.getElementById('moneyInput').value = state.money;
+  
+  // Event listeners
+  document.getElementById('statusBtn').addEventListener('click', toggleStatus);
+  document.getElementById('moneyInput').addEventListener('change', updateMoney);
+  document.getElementById('addTaskBtn').addEventListener('click', () => openModal('taskModal'));
+  document.getElementById('addThingBtn').addEventListener('click', () => openModal('thingModal'));
+  
+  // Close modals on outside click
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal(modal.id);
+      }
+    });
+  });
+  
+  // Close modals on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal('taskModal');
+      closeModal('thingModal');
+    }
+  });
+  
+  // Update timers every second
+  setInterval(updateTimers, 1000);
+}
+
+// Start the app
+init();
+</script>
+</body>
+</html>
